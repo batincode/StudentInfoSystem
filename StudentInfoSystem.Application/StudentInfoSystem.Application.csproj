@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StudentInfoSystem.Core\StudentInfoSystem.Core.csproj" />
+    <ProjectReference Include="..\StudentInfoSystem.Infrastructure\StudentInfoSystem.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
