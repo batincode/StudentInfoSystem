@@ -20,7 +20,7 @@ namespace StudentInfoSystem.API.Controllers
 
        
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Teacher>>> GetAllTeachers()// denem demsdjbsgdkşjgbsdgbjsşjkdg
+        public async Task<ActionResult<IEnumerable<Teacher>>> GetAllTeachers()
         {
             var teachers = await _teacherRepository.GetAllAsync();
             return Ok(teachers);
