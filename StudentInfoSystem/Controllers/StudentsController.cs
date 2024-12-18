@@ -27,7 +27,7 @@ namespace StudentInfoSystem.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Student>> GetStudent(int id)
         {
-            var student = await _studentRepository.GetStudentByIdAsync(id);
+            var student = await _studentRepository.GetStudentByIdAsync(id);// deneme git deneme
             if (student == null)
                 return NotFound();
 
