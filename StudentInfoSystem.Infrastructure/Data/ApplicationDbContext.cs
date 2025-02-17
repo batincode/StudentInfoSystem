@@ -21,6 +21,9 @@ namespace StudentInfoSystem.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Enrollment>()
+                .HasKey(e => new { e.StudentId, e.CourseId }); 
+
+            modelBuilder.Entity<Enrollment>()
                 .HasOne(e => e.Student)
                 .WithMany(s => s.Enrollments)
                 .HasForeignKey(e => e.StudentId);
@@ -41,5 +44,6 @@ namespace StudentInfoSystem.Infrastructure.Data
                 .HasForeignKey(s => s.AdvisorId)
                 .OnDelete(DeleteBehavior.SetNull);
         }
+
     }
 }

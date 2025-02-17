@@ -39,6 +39,7 @@ namespace StudentInfoSystem.Infrastructure.Repositories
         public async Task AddAsync(Enrollment enrollment)
         {
             await _context.Set<Enrollment>().AddAsync(enrollment);
+            await _context.SaveChangesAsync();
         }
 
         

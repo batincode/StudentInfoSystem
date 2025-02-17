@@ -30,6 +30,7 @@ namespace StudentInfoSystem.Infrastructure.Repositories
         public async Task AddAsync(Teacher teacher)
         {
             await _context.Set<Teacher>().AddAsync(teacher);
+            await _context.SaveChangesAsync();
         }
 
         

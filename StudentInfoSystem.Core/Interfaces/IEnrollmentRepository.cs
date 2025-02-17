@@ -12,7 +12,7 @@ namespace StudentInfoSystem.Core.Interfaces
         Task<Enrollment> GetByIdAsync(int id);
         Task<IEnumerable<Enrollment>> GetAllByStudentIdAsync(int studentId);
         Task<IEnumerable<Enrollment>> GetAllAsync();
-       
+        Task<IEnumerable<Enrollment>> GetByStudentIdAsync(int studentId);
         Task AddAsync(Enrollment enrollment);
         Task UpdateAsync(Enrollment enrollment);
         Task DeleteAsync(int id);

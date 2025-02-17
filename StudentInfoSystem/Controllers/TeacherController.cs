@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StudentInfoSystem.Core.DTOs.Teacher;
 using StudentInfoSystem.Core.Entities;
 using StudentInfoSystem.Core.Interfaces;
 using System.Collections.Generic;
@@ -11,47 +14,55 @@ namespace StudentInfoSystem.API.Controllers
     public class TeacherController : ControllerBase
     {
         private readonly ITeacherRepository _teacherRepository;
+        private readonly IMapper _mapper;
 
-        
-        public TeacherController(ITeacherRepository teacherRepository)
+        public TeacherController(ITeacherRepository teacherRepository, IMapper mapper)
         {
             _teacherRepository = teacherRepository;
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-       
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Teacher>>> GetAllTeachers()
+        public async Task<ActionResult<IEnumerable<TeacherDto>>> GetAllTeachers()
         {
             var teachers = await _teacherRepository.GetAllAsync();
-            return Ok(teachers);
+
+            var teacherDtos = _mapper.Map<IEnumerable<TeacherDto>>(teachers);
+
+            return Ok(teacherDtos); 
         }
 
-        
+
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Teacher>> GetTeacherById(int id)
         {
-            var teacher = await _teacherRepository.GetByIdAsync(id);
-            if (teacher == null)
+            var teachers = await _teacherRepository.GetByIdAsync(id);
+            if (teachers == null)
             {
                 return NotFound($"Teacher with ID {id} not found.");
             }
-            return Ok(teacher);
+            return Ok(teachers);
         }
 
-       
+
         [HttpPost]
-        public async Task<ActionResult<Teacher>> AddTeacher(Teacher teacher)
+        public async Task<ActionResult<TeacherDto>> AddTeacher(TeacherDto teacherDto)
         {
-            if (teacher == null)
+            if (teacherDto == null)
             {
                 return BadRequest("Teacher data is invalid.");
             }
 
+            var teacher = _mapper.Map<Teacher>(teacherDto);
             await _teacherRepository.AddAsync(teacher);
-            return CreatedAtAction(nameof(GetTeacherById), new { id = teacher.Id }, teacher);
+            var resultDto = _mapper.Map<TeacherDto>(teacher);
+            
+
+            return CreatedAtAction(nameof(GetTeacherById), new { id = resultDto.Id }, resultDto);
         }
 
-        
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateTeacher(int id, Teacher teacher)
         {

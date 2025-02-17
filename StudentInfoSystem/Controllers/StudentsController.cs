@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StudentInfoSystem.Core.DTOs.Student;
 using StudentInfoSystem.Core.Entities;
 using StudentInfoSystem.Core.Interfaces;
 using System.Collections.Generic;
@@ -35,11 +36,25 @@ namespace StudentInfoSystem.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddStudent(Student student)
+        public async Task<ActionResult> AddStudent(StudentDto studentDto)
         {
+            if (studentDto == null || string.IsNullOrWhiteSpace(studentDto.Password))
+                return BadRequest("Password is required.");
+
+            var student = new Student
+            {
+                Name = studentDto.Name,
+                Email = studentDto.Email,
+                Password = studentDto.Password, // Kullanıcıdan gelen parola
+                AdvisorId = studentDto.AdvisorId
+            };
+
             await _studentRepository.AddStudentAsync(student);
-            return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);
+
+            return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, studentDto);
         }
+
+
 
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateStudent(int id, Student student)

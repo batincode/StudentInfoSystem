@@ -47,5 +47,7 @@ namespace StudentInfoSystem.Application.Services
         {
             return await _courseRepository.GetCoursesByTeacherIdAsync(teacherId);
         }
+        
+
     }
 }

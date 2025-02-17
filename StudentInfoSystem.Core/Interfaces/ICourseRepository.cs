@@ -15,5 +15,7 @@ namespace StudentInfoSystem.Core.Interfaces
         Task UpdateAsync(Course course);
         Task DeleteAsync(int id);
         Task<IEnumerable<Course>> GetCoursesByTeacherIdAsync(int teacherId);
+        
+
     }
 }

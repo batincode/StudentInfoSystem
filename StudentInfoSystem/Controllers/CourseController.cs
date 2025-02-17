@@ -50,53 +50,81 @@ namespace StudentInfoSystem.API.Controllers
             return Ok(course);
         }
 
-        
+
         [HttpPost]
-        public async Task<ActionResult<Course>> AddCourse([FromBody] CourseCreateDto courseDto)
+        public async Task<ActionResult<CourseResponseDto>> AddCourse([FromBody] CourseCreateDto courseCreateDto)
         {
-            if (courseDto == null)
+            if (courseCreateDto == null)
             {
                 return BadRequest("Course data is null.");
             }
 
-           
             var course = new Course
             {
-                Name = courseDto.Name,
-                Code = courseDto.Code,
-                Credits = courseDto.Credits,
-                StartTime = courseDto.StartTime,
-                EndTime = courseDto.EndTime,
-                TeacherId = courseDto.TeacherId
+                Name = courseCreateDto.Name,
+                Code = courseCreateDto.Code,
+                Credits = courseCreateDto.Credits,
+                StartTime = courseCreateDto.StartTime,
+                EndTime = courseCreateDto.EndTime,
+                TeacherId = courseCreateDto.TeacherId,
+                Day = courseCreateDto.Day
             };
 
             await _courseRepository.AddAsync(course);
 
-           
-            return CreatedAtAction(nameof(GetCourse), new { id = course.Id }, course);
+            var courseResponse = new CourseResponseDto
+            {
+                Id = course.Id,
+                Name = course.Name,
+                Code = course.Code,
+                Credits = course.Credits,
+                Day = course.Day,
+                StartTime = course.StartTime,
+                EndTime = course.EndTime,
+                TeacherId = course.TeacherId
+            };
+
+            return CreatedAtAction(nameof(GetCourse), new { id = course.Id }, courseResponse);
         }
 
 
-       
+
+
+
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateCourse(int id, [FromBody] Course course)
+        public async Task<ActionResult> UpdateCourse(int id, [FromBody] CourseCreateDto courseCreateDto)
         {
-            if (course == null || id != course.Id)
+            // Eğer gelen veri null ise veya ID eşleşmiyorsa, hatalı istek döndür
+            if (courseCreateDto == null || id != courseCreateDto.Id)
             {
-                return BadRequest();
+                return BadRequest("Course data is null or ID mismatch.");
             }
 
+            // Veritabanından mevcut kursu al
             var existingCourse = await _courseRepository.GetByIdAsync(id);
             if (existingCourse == null)
             {
-                return NotFound();
+                return NotFound(); // Eğer kurs bulunamazsa, NotFound döndür
             }
 
-            await _courseRepository.UpdateAsync(course);
-            return NoContent();
+            // Mevcut kursu güncelle
+            existingCourse.Name = courseCreateDto.Name;
+            existingCourse.Code = courseCreateDto.Code;
+            existingCourse.Credits = courseCreateDto.Credits;
+            existingCourse.StartTime = courseCreateDto.StartTime;
+            existingCourse.EndTime = courseCreateDto.EndTime;
+            existingCourse.Day = courseCreateDto.Day; // Gün bilgisini de burada güncelle
+            existingCourse.TeacherId = courseCreateDto.TeacherId;
+
+            // Kursu güncelle
+            await _courseRepository.UpdateAsync(existingCourse);
+
+            // Güncellenmiş kursu döndür
+            return NoContent(); // Genellikle güncelleme işlemi sonrası 204 No Content döndürülür
         }
 
-       
+
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCourse(int id)
         {

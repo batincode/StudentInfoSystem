@@ -21,28 +21,7 @@ namespace StudentInfoSystem.Infrastructure.Repositories
         
         public async Task<IEnumerable<Attendance>> GetAllAsync()
         {
-            return await _context.Attendances
-                .Include(a => a.Student) 
-                .Include(a => a.Course)  
-                .Select(a => new Attendance
-                {
-                    Id = a.Id,
-                    StudentId = a.StudentId,
-                    CourseId = a.CourseId,
-                    Date = a.Date,
-                    IsPresent = a.IsPresent,
-                   
-                    Student = new Student
-                    {
-                        Name = a.Student.Name
-                    },
-                   
-                    Course = new Course
-                    {
-                        Name = a.Course.Name
-                    }
-                })
-                .ToListAsync();
+            return await _context.Attendances.ToListAsync();
         }
 
         public async Task<IEnumerable<Attendance>> GetAllByStudentIdAsync(int studentId)
@@ -55,27 +34,7 @@ namespace StudentInfoSystem.Infrastructure.Repositories
        
         public async Task<Attendance> GetByIdAsync(int id)
         {
-            return await _context.Attendances
-                .Where(a => a.Id == id)
-                .Select(a => new Attendance
-                {
-                    Id = a.Id,
-                    StudentId = a.StudentId,
-                    CourseId = a.CourseId,
-                    Date = a.Date,
-                    IsPresent = a.IsPresent,
-                    Student = new Student
-                    {
-                        Id = a.Student.Id,
-                        Name = a.Student.Name 
-                    },
-                    Course = new Course
-                    {
-                        Id = a.Course.Id,
-                        Name = a.Course.Name 
-                    }
-                })
-                .FirstOrDefaultAsync();
+            return await _context.Attendances.FindAsync(id);
         }
 
 

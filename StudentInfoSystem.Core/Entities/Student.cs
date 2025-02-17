@@ -13,7 +13,7 @@ namespace StudentInfoSystem.Core.Entities
         [Column("FullName")]
         public string Name{ get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }
+        public string? Password { get; set; }
         public int? AdvisorId { get; set; }
 
         public Teacher Advisor { get; set; }

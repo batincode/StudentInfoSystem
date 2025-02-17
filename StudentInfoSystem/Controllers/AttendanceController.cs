@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StudentInfoSystem.Core.DTOs;
+using Microsoft.EntityFrameworkCore;
+using StudentInfoSystem.Core.DTOs.Attendance;
 using StudentInfoSystem.Core.Entities;
 using StudentInfoSystem.Core.Interfaces;
-using StudentInfoSystem.Core.Services; // AttendanceService'yi kullanmak için ekleyin
+using StudentInfoSystem.Core.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,24 +14,39 @@ namespace StudentInfoSystem.API.Controllers
     public class AttendanceController : ControllerBase
     {
         private readonly IAttendanceRepository _attendanceRepository;
-        private readonly IAttendanceService _attendanceService; // IAttendanceService'i ekleyin
+        private readonly IAttendanceService _attendanceService; 
 
-        // Constructor: Dependency injection
+      
         public AttendanceController(IAttendanceRepository attendanceRepository, IAttendanceService attendanceService)
         {
             _attendanceRepository = attendanceRepository;
-            _attendanceService = attendanceService; // AttendanceService'i enjekte edin
+            _attendanceService = attendanceService; 
         }
 
-        // GET: api/attendance
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Attendance>>> GetAll()
+        public async Task<ActionResult<IEnumerable<AttendanceDto>>> GetAll()
         {
             var attendances = await _attendanceRepository.GetAllAsync();
-            return Ok(attendances);
+            
+            
+
+            // Attendance modelinden AttendanceDto'ya dönüşüm
+            var attendanceDtos = attendances.Select(a => new AttendanceDto
+            {
+                StudentId = a.StudentId,
+                CourseId = a.CourseId,
+                IsPresent = a.IsPresent,
+                StudentName= a.Student.Name
+
+
+            }).ToList();
+
+            return Ok(attendanceDtos);
         }
 
-        // GET: api/attendance/student/{studentId}
+
+
         [HttpGet("student/{studentId}")]
         public async Task<ActionResult<IEnumerable<Attendance>>> GetByStudentId(int studentId)
         {
@@ -42,7 +58,6 @@ namespace StudentInfoSystem.API.Controllers
             return Ok(attendances);
         }
 
-        // GET: api/attendance/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Attendance>> GetById(int id)
         {
@@ -54,7 +69,7 @@ namespace StudentInfoSystem.API.Controllers
             return Ok(attendance);
         }
 
-        // POST: api/attendance
+       
         [HttpPost]
         public async Task<IActionResult> AddAttendance([FromBody] AttendanceDto attendanceDto)
         {
@@ -63,7 +78,7 @@ namespace StudentInfoSystem.API.Controllers
                 return BadRequest("Attendance data is null");
             }
 
-            // DTO'yu Attendance nesnesine dönüştür
+            
             var attendance = new Attendance
             {
                 StudentId = attendanceDto.StudentId,
@@ -71,14 +86,14 @@ namespace StudentInfoSystem.API.Controllers
                 IsPresent = attendanceDto.IsPresent
             };
 
-            // Attendance kaydını ekleyin
+         
             await _attendanceService.AddAttendanceRecordAsync(attendance);
 
-            // Yeni oluşturulan kaydın ID'si ile 201 Created yanıtı döndür
+           
             return CreatedAtAction(nameof(GetById), new { id = attendance.Id }, attendance);
         }
 
-        // PUT: api/attendance/{id}
+       
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateAttendance(int id, Attendance attendance)
         {
@@ -94,10 +109,10 @@ namespace StudentInfoSystem.API.Controllers
             }
 
             await _attendanceRepository.UpdateAsync(attendance);
-            return NoContent(); // No content is returned for successful update
+            return NoContent(); 
         }
 
-        // DELETE: api/attendance/{id}
+        
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAttendance(int id)
         {
@@ -108,7 +123,7 @@ namespace StudentInfoSystem.API.Controllers
             }
 
             await _attendanceRepository.DeleteAsync(id);
-            return NoContent(); // No content is returned for successful delete
+            return NoContent(); 
         }
     }
 }
